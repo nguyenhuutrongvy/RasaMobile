@@ -9,7 +9,7 @@ object RetrofitHelper {
     fun getInstance(): Retrofit {
         return Retrofit.Builder().baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create())
-            // We need to add converter factory to
+            // Add converter factory to
             // Convert JSON object to Java object
             .build()
     }

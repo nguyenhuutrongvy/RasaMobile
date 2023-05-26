@@ -4,18 +4,16 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.rasachatbotapp.network.Message
-import com.example.rasachatbotapp.network.MessageSender
 import com.example.rasachatbotapp.network.QuotesApi
-import com.example.rasachatbotapp.network.RetrofitHelper
-import com.example.rasachatbotapp.network.rasaApiService
-import kotlinx.coroutines.GlobalScope
+import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.OkHttpClient
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
@@ -35,80 +33,87 @@ class MainActivityViewModel : ViewModel() {
 
     fun sendMessagetoRasa(message: Message) {
         addMessage(message)
+        // Create Retrofit
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://3daf-2402-800-623c-110a-6503-a224-4e8d-b68f.ap.ngrok.io")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
 
-        val quotesApi = RetrofitHelper.getInstance().create(QuotesApi::class.java)
-        // Launching a new coroutine
-        /*GlobalScope.launch {
-            val result = quotesApi.getQuotes()
-            if (result != null)
-            // Checking the results
-                Log.d("nhtv: ", result.body().toString())
-        }*/
+        // Create Service
+        val service = retrofit.create(QuotesApi::class.java)
 
-        /*val okHttpClient = OkHttpClient()
-        val retrofit = Retrofit.Builder().baseUrl("https://8c86-2402-800-623c-110a-5d64-5b2b-4c37-5b53.ap.ngrok.io/webhooks/rest/")
-            .client(okHttpClient).addConverterFactory(GsonConverterFactory.create()).build()
-        val messageSender = retrofit.create(MessageSender::class.java)
-        val response = messageSender.messageSender(message)
-        response.enqueue(object : Callback<ArrayList<Message>> {
-            override fun onResponse(
-                call: Call<ArrayList<Message>>,
-                response: Response<ArrayList<Message>>
-            ) {
-                if (response.code() == 200 && response.body() != null) {
+        // Create JSON using JSONObject
+        val jsonObject = JSONObject()
+        jsonObject.put("sender", "nhtv")
+        jsonObject.put("message", message.text)
+//        jsonObject.put("age", "23")
+
+        // Convert JSONObject to String
+        val jsonObjectString = jsonObject.toString()
+
+        // Create RequestBody ( We're not using any converter, like GsonConverter, MoshiConverter e.t.c, that's why we use RequestBody )
+        val requestBody = jsonObjectString.toRequestBody("application/json".toMediaTypeOrNull())
+
+        CoroutineScope(Dispatchers.IO).launch {
+            // Do the POST request and get response
+            val response = service.createEmployee(requestBody)
+
+            withContext(Dispatchers.Main) {
+                if (response.isSuccessful) {
+
+                    // Convert raw JSON to pretty JSON using GSON library
+                    /*val gson = GsonBuilder().setPrettyPrinting().create()
+                    val prettyJson = gson.toJson(
+                        JsonParser.parseString(
+                            response.body()
+                                ?.string() // About this thread blocking annotation : https://github.com/square/retrofit/issues/3255
+                        )
+                    )*/
+
+//                    val gson = Gson()
                     response.body()!!.forEach {
+                        /*val mess = gson.fromJson(it.toString(), Message::class.java)
+                        mess.time = Calendar.getInstance().time*/
                         it.time = Calendar.getInstance().time
                         addMessage(it)
                     }
+
+//                    Log.d("Pretty Printed JSON :", prettyJson)
+
+                } else {
+
+                    addMessage(
+                        Message(
+                            "${response.code()} error occurred",
+                            "bot",
+                            Calendar.getInstance().time
+                        )
+                    )
+
+                    Log.e("RETROFIT_ERROR", response.code().toString())
+
                 }
             }
+        }
 
-            override fun onFailure(call: Call<ArrayList<Message>>, t: Throwable) {
+        /*addMessage(message)
+        viewModelScope.launch {
+            val response = rasaApiService.sendMessage(message)
+            Log.e("Message", response.toString())
+            if (response.code() == 200 && response.body() != null) {
+                response.body()!!.forEach {
+                    it.time = Calendar.getInstance().time
+                    addMessage(it)
+                }
+            } else {
                 addMessage(
                     Message(
-                        "Error occurred!",
+                        "${response.code()} error occurred",
                         "bot",
                         Calendar.getInstance().time
                     )
                 )
             }
-        })*/
-
-        viewModelScope.launch {
-            val result = quotesApi.getQuotes()
-            if (result != null)
-            // Checking the results
-                Log.d("nhtv: ", result.body().toString())
-
-            /*val response = rasaApiService.sendMessage(message)
-            Log.e("Message", response.toString())
-
-            response.enqueue(object : Callback<ArrayList<Message>> {
-                override fun onResponse(
-                    call: Call<ArrayList<Message>>,
-                    response: Response<ArrayList<Message>>
-                ) {
-
-                    if (response.code() == 200 && response.body() != null) {
-                        response.body()!!.forEach {
-                            it.time = Calendar.getInstance().time
-                            addMessage(it)
-                        }
-                    } else {
-
-                    }
-                }
-
-                override fun onFailure(call: Call<ArrayList<Message>>, t: Throwable) {
-                    addMessage(
-                        Message(
-                            "Error occurred!",
-                            "bot",
-                            Calendar.getInstance().time
-                        )
-                    )
-                }
-            })*/
-        }
+        }*/
     }
 }
