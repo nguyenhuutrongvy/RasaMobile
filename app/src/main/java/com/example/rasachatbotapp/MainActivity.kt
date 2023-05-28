@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.rasachatbotapp.network.Message
 import com.example.rasachatbotapp.ui.theme.RasaChatbotAppTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
@@ -27,6 +28,9 @@ import java.util.*
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+//        Thread.sleep(2000)
+        val splashScreen = installSplashScreen()
+
         super.onCreate(savedInstanceState)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         setContent {
@@ -62,6 +66,15 @@ fun MainScreen(navigator: DestinationsNavigator) {
         ChatSection(Modifier.weight(1f), viewModel, navigator = navigator)
         MessageSection(viewModel)
     }
+
+//    val viewModel = MainActivityViewModel()
+    viewModel.sendMessagetoRasa(
+        Message(
+            recipient_id = "nhtv",
+            text = "Hi",
+            time = Calendar.getInstance().time
+        )
+    )
 
 }
 

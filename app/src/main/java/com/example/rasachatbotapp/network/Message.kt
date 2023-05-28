@@ -13,6 +13,8 @@ data class Message(
     var carousels: List<Carousel>? = null
 )
 
+
+
 data class RasaButton(
     val title: String,
     val payload: String

@@ -25,7 +25,7 @@ class MainActivityViewModel : ViewModel() {
     private val connectivityState = mutableStateOf(true)
     val _connectivityState = connectivityState
 
-    val username = "Dishant"
+    val username = "NHTV"
 
     fun addMessage(message: Message) {
         message_list.add(0, message)
@@ -35,7 +35,7 @@ class MainActivityViewModel : ViewModel() {
         addMessage(message)
         // Create Retrofit
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://3daf-2402-800-623c-110a-6503-a224-4e8d-b68f.ap.ngrok.io")
+            .baseUrl("https://ba98-2402-800-623c-110a-3420-2949-9948-fbda.ap.ngrok.io")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
