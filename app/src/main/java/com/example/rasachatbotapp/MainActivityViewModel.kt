@@ -1,8 +1,10 @@
 package com.example.rasachatbotapp
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import com.example.rasachatbotapp.network.Message
 import com.example.rasachatbotapp.network.QuotesApi
@@ -35,7 +37,7 @@ class MainActivityViewModel : ViewModel() {
         addMessage(message)
         // Create Retrofit
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://ba98-2402-800-623c-110a-3420-2949-9948-fbda.ap.ngrok.io")
+            .baseUrl("https://8a8a-2402-800-623c-110a-885b-3dd-52d7-2b13.ap.ngrok.io")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
@@ -44,7 +46,7 @@ class MainActivityViewModel : ViewModel() {
 
         // Create JSON using JSONObject
         val jsonObject = JSONObject()
-        jsonObject.put("sender", "nhtv")
+        jsonObject.put("sender", username)
         jsonObject.put("message", message.text)
 //        jsonObject.put("age", "23")
 
@@ -85,7 +87,7 @@ class MainActivityViewModel : ViewModel() {
                     addMessage(
                         Message(
                             "${response.code()} error occurred",
-                            "bot",
+                            "Bot",
                             Calendar.getInstance().time
                         )
                     )

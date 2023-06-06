@@ -35,7 +35,5 @@ fun OpenUrl(
                 openUrl.value = false
             }
         )
-
     }
-
 }

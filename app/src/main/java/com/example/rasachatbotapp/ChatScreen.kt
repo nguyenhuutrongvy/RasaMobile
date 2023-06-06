@@ -106,14 +106,16 @@ fun ChatSection(
     val simpleDateFormat = SimpleDateFormat("h:mm a", Locale.ENGLISH)
     LazyColumn(
         modifier = modifier
-            .fillMaxSize()
+            /*.fillMaxSize()*/
+            .fillMaxWidth()
             .padding(vertical = 16.dp, horizontal = 6.dp),
         reverseLayout = true
     ) {
         if (chats == null) {
             items(viewModel!!.messages) { chat ->
                 MessageItem(
-                    messageText = chat.text,
+                    /*messageText = chat.text,*/
+                    messageText = (if (chat.alternativeName != null) chat.alternativeName else chat.text),
                     time = simpleDateFormat.format(chat.time),
                     isOut = chat.isOut,
                     image = chat.image,
@@ -127,7 +129,8 @@ fun ChatSection(
         } else if (chats != null) {
             items(chats) { chat ->
                 MessageItem(
-                    messageText = chat.text,
+                    /*messageText = chat.text,*/
+                    messageText = (if (chat.alternativeName != null) chat.alternativeName else chat.text),
                     time = simpleDateFormat.format(chat.time),
                     isOut = chat.isOut,
                     image = chat.image,
@@ -138,8 +141,6 @@ fun ChatSection(
                 Spacer(modifier = Modifier.height(8.dp))
             }
         }
-
-
     }
 }
 
@@ -219,8 +220,6 @@ fun MessageItem(
             fontSize = 12.sp,
             modifier = Modifier.padding(start = 8.dp)
         )
-
-
     }
 }
 
@@ -240,7 +239,8 @@ fun ShowButtons(
                             text = button.payload,
                             recipient_id = viewModel.username,
                             time = Calendar.getInstance().time,
-                            isOut = true
+                            isOut = true,
+                            alternativeName = button.title
                         )
                     )
                 },
@@ -324,7 +324,8 @@ fun CarouselItem(
                             text = single_carousel.button.payload,
                             recipient_id = viewModel.username,
                             time = Calendar.getInstance().time,
-                            isOut = true
+                            isOut = true,
+                            alternativeName = single_carousel.button.title
                         )
                     )
                 },

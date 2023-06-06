@@ -10,7 +10,9 @@ data class Message(
     var image: String? = "",
     var isOut: Boolean = false,
     var buttons: List<RasaButton>? = null,
-    var carousels: List<Carousel>? = null
+    var carousels: List<Carousel>? = null,
+
+    var alternativeName: String? = null
 )
 
 

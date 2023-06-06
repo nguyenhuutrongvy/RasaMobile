@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.rasachatbotapp.network.Message
@@ -58,7 +59,7 @@ fun MainScreen(navigator: DestinationsNavigator) {
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         TopBarSection(
-            username = "Bot",
+            username = "Du lịch Đà Lạt Bot",
             profile = painterResource(id = R.drawable.gojo),
             isOnline = viewModel._connectivityState.value,
             navigator = navigator
@@ -67,15 +68,15 @@ fun MainScreen(navigator: DestinationsNavigator) {
         MessageSection(viewModel)
     }
 
+    // Auto send greet message whenever run
 //    val viewModel = MainActivityViewModel()
     viewModel.sendMessagetoRasa(
         Message(
-            recipient_id = "nhtv",
-            text = "Hi",
+            recipient_id = "NHTV",
+            text = "Xin chào!",
             time = Calendar.getInstance().time
         )
     )
-
 }
 
 @Composable
@@ -91,7 +92,7 @@ fun MessageSection(
     ) {
         OutlinedTextField(
             placeholder = {
-                Text("Message..")
+                Text("Nhập tin nhắn...")
             },
             value = message.value,
             onValueChange = {
@@ -104,6 +105,16 @@ fun MessageSection(
                     contentDescription = null,
                     tint = MaterialTheme.colors.primary,
                     modifier = Modifier.clickable {
+                        // If the message is null or white spaces
+                        if (message.value.isNullOrBlank()) {
+                            Toast.makeText(
+                                context,
+                                "Vui lòng nhập nội dung!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@clickable
+                        }
+
                         if (viewModel._connectivityState.value) {
                             viewModel.sendMessagetoRasa(
                                 Message(
@@ -116,7 +127,7 @@ fun MessageSection(
                         } else {
                             Toast.makeText(
                                 context,
-                                "Please connect to internet",
+                                "Vui lòng kết nối internet!",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
